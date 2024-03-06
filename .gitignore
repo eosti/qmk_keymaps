@@ -2,3 +2,5 @@ obj_*
 *.hex
 *.elf
 *.map
+*.tmp
+*.uf2
