@@ -3,7 +3,7 @@ USER = eosti
 # TODO: make it so you can not put the leading / on versions
 KEYBOARDS = irisv3 planck bdn9 maypad nyquist
 PATH_irisv3 = keebio/iris
-VERSION_irisv3 = /rev4
+VERSION_irisv3 = /rev3
 PATH_planck = planck
 VERSION_planck = /rev6_drop
 PATH_bdn9 = keebio/bdn9
@@ -27,8 +27,8 @@ $(KEYBOARDS):
 	ln -s $(shell pwd)/user/$(USER) qmk_firmware/users/$(USER)
 	ln -s $(shell pwd)/$@ qmk_firmware/keyboards/$(PATH_$@)/keymaps/$(USER)
 
-	# run lint check (non-strict)
-	# cd qmk_firmware; qmk lint -km $(USER) -kb $(PATH_$@)$(VERSION_$@)
+	# run lint check
+	# cd qmk_firmware; qmk lint -km $(USER) -kb $(PATH_$@)$(VERSION_$@) --strict
 
 	# run build
 	make BUILD_DIR=$(shell pwd) -j1 -C qmk_firmware $(PATH_$@)$(VERSION_$@):$(USER)
@@ -43,6 +43,7 @@ clean:
 	rm -f *.map
 	rm -f *.hex
 	rm -f *.tmp
+	rm -f *.uf2
 	for f in $(KEYBOARDS); do rm -rf qmk_firmware/keyboards/$(PATH_$@)/keymaps/$(USER); done
 	rm -rf qmk_firmware/users/$(USER)
 	cd qmk_firmware; qmk clean
