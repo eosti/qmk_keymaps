@@ -15,52 +15,23 @@
  */
 
 #include QMK_KEYBOARD_H
+#include "eosti.h"
 
 enum layer_names {
     _QWERTY,
+    _WINDOWS,
     _GAME,
     _UPPER,
     _LOWER,
     _UTILS
 };
 
-enum custom_keycodes {
-  TMUX_WN = SAFE_RANGE,
-  TMUX_WL
-};
-
-bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  switch (keycode) {
-    case TMUX_WN:                       // Switches to next window in tmux
-      if (record->event.pressed) {
-        SEND_STRING(SS_LCTL("a") "n"); // Requires a leader of ctrl-a
-      }
-      break;
-
-    case TMUX_WL:                       // Switches to last window in tmux
-      if (record->event.pressed) {
-          SEND_STRING(SS_LCTL("a") "l");
-      }
-      break;
-
-  }
-  return true;
-};
-
 #define UPPER       MO(_UPPER)
 #define LOWER       MO(_LOWER)
 #define GAME        TG(_GAME)
+#define WINDOWS     TG(_WINDOWS)
 #define UTILS       MO(_UTILS)
-
-#define WM_R        LCTL(KC_RGHT)       // Moves the MacOS WM to the right
-#define WM_L        LCTL(KC_LEFT)       // ...and to the left
-#define WM_MC       LCTL(KC_UP)         // Enters MacOS Mission Control
-#define WEB_R       LGUI(KC_RCBR)       // Change tabs to the right on Firefox, Chrome
-#define WEB_L       LGUI(KC_LCBR)       // ...and to the left
-#define TMUX_U      RALT(KC_UP)         // tmux navigation, requires tmux.conf change
-#define TMUX_D      RALT(KC_DOWN)
-#define TMUX_R      RALT(KC_RGHT)
-#define TMUX_L      RALT(KC_LEFT)
+#define ESC_MO      LT(_NUM, KC_ESC)
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_QWERTY] = LAYOUT(
@@ -71,9 +42,22 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
       KC_ESC,   KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,  KC_SCLN, KC_QUOT,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-      KC_LSFT,  KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,   KC_LCTL,          KC_LALT,  KC_N,    KC_M,  KC_COMM,  KC_DOT, KC_SLSH, KC_BSPC,
+      KC_LSFT,  KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,   KC_LCTL,          KC_RCTL,  KC_N,    KC_M,  KC_COMM,  KC_DOT, KC_SLSH, KC_BSPC,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
                                      KC_LGUI, UPPER,   KC_ENT,                    KC_SPC,  LOWER,   KC_RALT
+  //                               └────────┴────────┴────────┘                 └────────┴────────┴────────┘
+  ),
+  [_WINDOWS] = LAYOUT(
+  //┌────────┬────────┬────────┬────────┬────────┬────────┐                          ┌────────┬────────┬────────┬────────┬────────┬────────┐
+     _______, _______, _______, _______, _______, _______,                            _______, _______, _______, _______, _______, _______,
+  //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
+     _______, _______, _______, _______, _______, _______,                            _______, _______, _______, _______, _______, _______,
+  //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
+     _______, _______, _______, _______, _______, _______,                            _______, _______, _______, _______, _______, _______,
+  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
+     _______, _______, _______, _______, _______, _______, KC_LGUI,          _______, _______, _______, _______, _______, _______, _______,
+  //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
+                                    KC_LCTL, _______, _______,                   _______, _______, _______
   //                               └────────┴────────┴────────┘                 └────────┴────────┴────────┘
   ),
   [_GAME] = LAYOUT(
@@ -108,7 +92,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
       KC_TILD, KC_EXLM, KC_AT  , KC_HASH, KC_DLR , KC_PERC,                           KC_CIRC , KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_PLUS,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-     _______, TMUX_WL,  TMUX_WN,  KC_NO,   KC_NO,   KC_NO,                             TMUX_L,  TMUX_D,  TMUX_U,  TMUX_R,  KC_NO,  KC_PIPE,
+     _______, TMUX_WL, TMUX_WN,  KC_NO,   KC_NO,   KC_NO,                             TMUX_L,  TMUX_D,  TMUX_U,  TMUX_R,  KC_NO,  KC_PIPE,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      _______,  KC_NO,  _______, _______, _______, _______, _______,          _______, _______, _______, _______, _______,  KC_NO,   KC_DEL,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
@@ -123,7 +107,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
       RGB_TOG, RGB_MOD, RGB_HUI, RGB_SAI, RGB_VAI, RGB_SPI,                            KC_NO,   KC_INS,  KC_HOME, KC_PGUP, KC_NO,   GAME,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-      KC_NO,  RGB_RMOD, RGB_HUD, RGB_SAD, RGB_VAD, RGB_SPD,_______,          _______,  KC_SLEP, KC_DEL,  KC_END,  KC_PGDN, KC_NO,   KC_NO,
+      KC_NO,  RGB_RMOD, RGB_HUD, RGB_SAD, RGB_VAD, RGB_SPD,_______,          _______,  KC_SLEP, KC_DEL,  KC_END,  KC_PGDN, KC_NO,   WINDOWS,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
                                     _______,  KC_NO,  _______,                   _______, _______, _______
   //                               └────────┴────────┴────────┘                 └────────┴────────┴────────┘

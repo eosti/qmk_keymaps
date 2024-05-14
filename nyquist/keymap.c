@@ -15,6 +15,7 @@
  */
 
 #include QMK_KEYBOARD_H
+#include "eosti.h"
 
 enum layer_names {
     _QUERTY, 
@@ -26,49 +27,12 @@ enum layer_names {
     _UTILS
 };
 
-enum custom_keycodes {
-  TMUX_WN = SAFE_RANGE,
-  TMUX_WL
-};
-
-#define TMUX_LEADER "b"
-
-bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  switch (keycode) {
-    case TMUX_WN:                       // Switches to next window in tmux
-      if (record->event.pressed) {
-        SEND_STRING(SS_LCTL(TMUX_LEADER) "n");
-      }
-      break;
-
-    case TMUX_WL:                       // Switches to last window in tmux
-      if (record->event.pressed) {
-          SEND_STRING(SS_LCTL(TMUX_LEADER) "l");
-      }
-      break;
-
-  }
-  return true;
-};
-
 #define UPPER       MO(_UPPER)
 #define LOWER       MO(_LOWER)
 #define GAME        TG(_GAME)
 #define WINDOWS     TG(_WINDOWS)
 #define UTILS       MO(_UTILS)
 #define ESC_MO      LT(_NUM, KC_ESC)
-
-#define WM_R        LCTL(KC_RGHT)       // Moves the MacOS WM to the right
-#define WM_L        LCTL(KC_LEFT)       // ...and to the left
-#define WM_MC       LCTL(KC_UP)         // Enters MacOS Mission Control
-#define WEB_R       LCTL(KC_PGDN)       // Change tabs to the right on Firefox, Chrome
-#define WEB_L       LCTL(KC_PGUP)       // ...and to the left
-#define TMUX_U      RALT(KC_UP)         // tmux navigation, requires tmux.conf change
-#define TMUX_D      RALT(KC_DOWN)
-#define TMUX_R      RALT(KC_RGHT)
-#define TMUX_L      RALT(KC_LEFT)
-
-
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [_QUERTY] = LAYOUT_ortho_5x12(
